@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>coleção de câmeras [app]</title>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <img src="images/logo_icon.svg" alt="coleção de câmeras [logo]" class="header__image" />
+      <div class="header__top">
+        <h1>coleção de câmeras</h1>
+      </div>
+      <div class="header__form">
+        <h2>adicione >></h2>
+
+        <div class="form-group">
+          <input type="text" name="name" id="name" placeholder="nome" />
+          <input type="text" name="brand" id="brand" placeholder="marca" />
+          <select name="category" id="category">
+            <option disabled selected>categoria</option>
+          </select>
+          <input type="text" name="description" id="description" placeholder="descrição" />
+          <input type="number" min="0" name="value" id="value" placeholder="valor" />
+          <button onclick="addCamera()">adicionar</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="cameras">
+    <div class="container">
+      <h2 class="cameras__title">aqui estão suas câmeras :</h2>
+
+      <div id="cameras--list"></div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <small>&hearts; Projeto criado por Brenno Cavalcante [<a href="https://github.com/brennofacasi"
+          target="_blank">@brennofacasi</a>]<br />Curso de Pós-graduação em
+        Desenvolvimento Full
+        Stack da PUC-Rio</small>
+    </div>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+
+</html>
