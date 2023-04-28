@@ -6,7 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
-  <title>coleção de câmeras [app]</title>
+  <link rel="icon" type="image/x-icon" href="images/favicon@2x.png">
+  <title>reposicamera</title>
 </head>
 
 <body>
@@ -14,21 +15,20 @@
     <div class="container">
       <img src="images/logo_icon.svg" alt="coleção de câmeras [logo]" class="header__image" />
       <div class="header__top">
-        <h1>coleção de câmeras</h1>
+        <h1>reposicamera</h1>
       </div>
       <div class="header__form">
         <h2>adicione >></h2>
 
-        <div class="form-group">
-          <input type="text" name="name" id="name" placeholder="nome" />
-          <input type="text" name="brand" id="brand" placeholder="marca" />
-          <select name="category" id="category">
+        <form id="camera-form" class="form-group">
+          <input type="text" name="name" id="name" placeholder="nome" required />
+          <input type="text" name="brand" id="brand" placeholder="marca" required />
+          <input type="number" min="0" name="value" id="value" placeholder="valor" required />
+          <select name="category_id" id="category_id" required>
             <option disabled selected>categoria</option>
           </select>
-          <input type="text" name="description" id="description" placeholder="descrição" />
-          <input type="number" min="0" name="value" id="value" placeholder="valor" />
-          <button onclick="addCamera()">adicionar</button>
-        </div>
+          <button type="submit">adicionar</button>
+        </form>
       </div>
     </div>
   </header>
@@ -44,10 +44,8 @@
 
   <footer>
     <div class="container">
-      <small>&hearts; Projeto criado por Brenno Cavalcante [<a href="https://github.com/brennofacasi"
-          target="_blank">@brennofacasi</a>]<br />Curso de Pós-graduação em
-        Desenvolvimento Full
-        Stack da PUC-Rio</small>
+      <small>&#128247; Projeto criado por Brenno Cavalcante [<a href="https://github.com/brennofacasi"
+          target="_blank">@brennofacasi</a>]</small>
     </div>
   </footer>
 
