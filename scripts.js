@@ -12,38 +12,23 @@ const baseUrl = "http://localhost:5050";
   ----------------------------------------
 */
 
-const addCamera = async () => {
-  // Transforma em JSON o valor da option de categoria
-  const category = JSON.parse(document.getElementById("category").value);
+const cameraForm = document.getElementById("camera-form");
 
-  // Cria objeto pra nova câmera
-  const camera = {
-    name: document.getElementById("name").value,
-    brand: document.getElementById("brand").value,
-    category_id: category.id,
-    category_name: category.name,
-    category_icon: category.icon,
-    description: document.getElementById("description").value,
-    value: document.getElementById("value").value,
-  };
+const addCamera = async (event) => {
+  // Previne envio padrão do form
+  event.preventDefault();
 
-  // Cria caixa para câmera recém criada
-  const { id } = await postCamera(camera);
-  createCameraBox(camera, id);
+  // Coloca dados no FormData
+  const formData = new FormData(event.target);
 
-  // Zera formulário
-  document.getElementById("name").value = "";
-  document.getElementById("brand").value = "";
-  document.getElementById("category").value = "";
-  document.getElementById("description").value = "";
-  document.getElementById("value").value = "";
+  // Coloca dados no banco de dados
+  postCamera(formData).then((cameraData) => {
+    createCameraBox(cameraData);
+    cameraForm.reset();
+  });
 };
 
-const createAndAppendElement = (kind, inner, target) => {
-  const element = document.createElement(kind);
-  element.innerHTML = inner;
-  target.appendChild(element);
-};
+cameraForm.addEventListener("submit", addCamera);
 
 /* 
   ----------------------------------------
@@ -51,48 +36,13 @@ const createAndAppendElement = (kind, inner, target) => {
   ----------------------------------------
 */
 
-const categoryDropDown = document.getElementById("category");
+const categoryDropDown = document.getElementById("category_id");
 
 const createCategoryOption = (category) => {
   const option = document.createElement("option");
   option.text = "[" + category.name + "]";
-  option.value = `{ "id": ${category.id}, "name": "${category.name}", "icon": "${category.icon}" }`;
+  option.value = category.id;
   categoryDropDown.appendChild(option);
-};
-
-/* 
-  ----------------------------------------
-  Função para criar a caixa da lista de câmeras.
-  ----------------------------------------
-*/
-
-const camerasList = document.getElementById("cameras--list");
-
-const createCameraBox = (camera, id) => {
-  // Cria caixa
-  const cameraBox = document.createElement("div");
-  cameraBox.classList = "camera__box";
-  cameraBox.id = id;
-
-  // Cria imagem
-  const cameraIcon = document.createElement("img");
-  cameraIcon.src = "images/" + camera.category_icon;
-  cameraBox.appendChild(cameraIcon);
-
-  // Cria título
-  createAndAppendElement("h3", camera.name + " / " + camera.brand, cameraBox);
-  // Cria categoria
-  createAndAppendElement("span", "[" + camera.category_name + "]", cameraBox);
-  // Cria valor
-  createAndAppendElement("span", "R$ " + camera.value, cameraBox);
-
-  // Cria Botão
-  const deleteButton = document.createElement("button");
-  deleteButton.innerHTML = "deletar";
-  deleteButton.setAttribute("onClick", "deleteButton(" + id + ")");
-  cameraBox.appendChild(deleteButton);
-
-  camerasList.prepend(cameraBox);
 };
 
 /* 
@@ -115,38 +65,14 @@ camerasFromAPI();
 
 /* 
   ----------------------------------------
-  Função para obter categorias da API e criar opções no select para cada uma.
+  Função para obter categorias da API.
   ----------------------------------------
 */
 
 const categoriesFromAPI = async () => {
   let url = baseUrl + "/categories";
-  fetch(url, { method: "GET" })
-    .then((response) => response.json())
-    .then((data) => {
-      data.categories.forEach((category) => createCategoryOption(category));
-    });
-};
-
-categoriesFromAPI();
-
-/* 
-  ----------------------------------------
-  Função para adicionar câmera à base de dados
-  ----------------------------------------
-*/
-
-const postCamera = async (camera) => {
-  const formData = new FormData();
-  formData.append("name", camera.name);
-  formData.append("brand", camera.brand);
-  formData.append("category_id", camera.category_id);
-  formData.append("description", camera.description);
-  formData.append("value", camera.value);
-
-  let url = baseUrl + "/camera";
   try {
-    const response = await fetch(url, { method: "POST", body: formData });
+    const response = await fetch(url, { method: "get" });
     const data = await response.json();
     return data;
   } catch (error) {
@@ -154,16 +80,93 @@ const postCamera = async (camera) => {
   }
 };
 
-const deleteButton = (id) => {
-  let url = baseUrl + "/camera?id=" + id;
-  fetch(url, {
-    method: "delete",
-  })
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+categoriesFromAPI().then((data) => {
+  data.categories.forEach((category) => {
+    createCategoryOption(category);
+  });
+});
 
-  const div = document.getElementById(id);
-  div.remove();
+/* 
+  ----------------------------------------
+  Função para adicionar câmera à base de dados
+  ----------------------------------------
+*/
+
+const postCamera = async (formData) => {
+  try {
+    let url = baseUrl + "/camera";
+    const response = await fetch(url, { method: "POST", body: formData });
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Câmera adicionada!");
+      return data;
+    }
+
+    throw Error(data.message);
+  } catch (error) {
+    alert(error);
+  }
+};
+
+const deleteButton = async (id) => {
+  try {
+    let url = baseUrl + "/camera?id=" + id;
+    if (confirm("Você tem certeza que quer apagar a câmera?")) {
+      const response = await fetch(url, { method: "DELETE" });
+      await response.json();
+
+      const div = document.getElementById(id);
+      div.remove();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/* 
+  ----------------------------------------
+  Função para criar a caixa da lista de câmeras.
+  ----------------------------------------
+*/
+
+const camerasList = document.getElementById("cameras--list");
+
+const createCameraBox = (camera) => {
+  // Cria caixa
+  const cameraBox = document.createElement("div");
+  cameraBox.classList = "camera__box";
+  cameraBox.id = camera.id;
+
+  // Cria título
+  const title = document.createElement("h3");
+  title.innerHTML = camera.brand + " / " + camera.name;
+
+  // Cria valor
+  const value = document.createElement("span");
+  value.innerHTML = "R$ " + camera.value;
+
+  // Cria Botão
+  const deleteButton = document.createElement("button");
+  deleteButton.innerHTML = "deletar";
+  deleteButton.setAttribute("onClick", "deleteButton(" + camera.id + ")");
+
+  // Cria imagem e categoria
+  const cameraIcon = document.createElement("img");
+  const categoryName = document.createElement("span");
+
+  // Compara ID com lista de categoria e renderiza a imagem certa, e coloca os elementos HTML criados
+  categoriesFromAPI().then((data) => {
+    data.categories.forEach((category) => {
+      if (category.id == camera.category_id) {
+        categoryName.innerHTML = "[" + category.name + "]";
+        cameraIcon.src = "images/" + category.icon;
+        cameraIcon.alt = "Ícone da categoria " + category.name;
+
+        cameraBox.append(cameraIcon, title, categoryName, value, deleteButton);
+      }
+    });
+  });
+
+  camerasList.prepend(cameraBox);
 };
