@@ -37,7 +37,21 @@
     <div class="container">
       <h2 class="cameras__title">aqui estão suas câmeras :</h2>
 
-      <div id="cameras--list"></div>
+      <div id="all-cameras" class="cameras--list"></div>
+
+    </div>
+  </section>
+
+  <section id="search">
+    <div class="container">
+      <div class="search__box">
+        <h2>buscando uma câmera?</h2>
+        <form id="search-form" class="form-group">
+          <input type="text" name="name" id="search-name" placeholder="Instax Mini..." required />
+          <button type="submit">buscar</button>
+        </form>
+      </div>
+      <div id="search-cameras" class="cameras--list"></div>
 
     </div>
   </section>

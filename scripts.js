@@ -23,7 +23,7 @@ const addCamera = async (event) => {
 
   // Coloca dados no banco de dados
   postCamera(formData).then((cameraData) => {
-    createCameraBox(cameraData);
+    createCameraBox(cameraData, "all-cameras");
     cameraForm.reset();
   });
 };
@@ -56,7 +56,7 @@ const camerasFromAPI = async () => {
   fetch(url, { method: "GET" })
     .then((response) => response.json())
     .then((data) => {
-      data.cameras.forEach((camera) => createCameraBox(camera, camera.id));
+      data.cameras.forEach((camera) => createCameraBox(camera, "all-cameras"));
     })
     .catch((error) => console.log(error));
 };
@@ -109,7 +109,13 @@ const postCamera = async (formData) => {
   }
 };
 
-const deleteButton = async (id) => {
+/* 
+  ----------------------------------------
+  Função para deletar câmera da base de dados
+  ----------------------------------------
+*/
+
+const deleteCamera = async (id) => {
   try {
     let url = baseUrl + "/camera?id=" + id;
     if (confirm("Você tem certeza que quer apagar a câmera?")) {
@@ -126,13 +132,34 @@ const deleteButton = async (id) => {
 
 /* 
   ----------------------------------------
+  Função para buscar câmera na base de dados
+  ----------------------------------------
+*/
+
+const getCamera = async (cameraName) => {
+  try {
+    let url = baseUrl + "/camera?name=" + cameraName;
+    const response = await fetch(url, { method: "GET" });
+    const data = await response.json();
+
+    if (response.ok) {
+      return data;
+    }
+
+    throw Error(data.message);
+  } catch (error) {
+    alert(error);
+  }
+};
+
+/* 
+  ----------------------------------------
   Função para criar a caixa da lista de câmeras.
   ----------------------------------------
 */
 
-const camerasList = document.getElementById("cameras--list");
-
-const createCameraBox = (camera) => {
+const createCameraBox = (camera, listId) => {
+  const camerasList = document.getElementById(listId);
   // Cria caixa
   const cameraBox = document.createElement("div");
   cameraBox.classList = "camera__box";
@@ -149,7 +176,7 @@ const createCameraBox = (camera) => {
   // Cria Botão
   const deleteButton = document.createElement("button");
   deleteButton.innerHTML = "deletar";
-  deleteButton.setAttribute("onClick", "deleteButton(" + camera.id + ")");
+  deleteButton.setAttribute("onClick", "deleteCamera(" + camera.id + ")");
 
   // Cria imagem e categoria
   const cameraIcon = document.createElement("img");
@@ -170,3 +197,32 @@ const createCameraBox = (camera) => {
 
   camerasList.prepend(cameraBox);
 };
+
+/* 
+  ----------------------------------------
+  Função para buscar câmera pelo nome
+  ----------------------------------------
+*/
+
+const searchForm = document.getElementById("search-form");
+
+const searchCamera = async (event) => {
+  // Previne envio padrão do form
+  event.preventDefault();
+
+  const searchedCameras = document.getElementById("search-cameras");
+  if (searchedCameras.hasChildNodes()) {
+    searchedCameras.firstChild.remove();
+  }
+
+  // Coleta nome da câmera
+  const cameraName = document.getElementById("search-name").value;
+
+  // Busca câmera e coloca na lista
+  getCamera(cameraName).then((cameraData) => {
+    createCameraBox(cameraData, "search-cameras");
+    searchForm.reset();
+  });
+};
+
+searchForm.addEventListener("submit", searchCamera);

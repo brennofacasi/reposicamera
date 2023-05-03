@@ -22,6 +22,15 @@ body {
   color: var(--dark);
 }
 
+a,
+a:link {
+  color: var(--light-200);
+}
+
+a:hover {
+  color: var(--dark);
+}
+
 body,
 input,
 button,
@@ -34,6 +43,12 @@ select {
   border: 1px solid var(--dark);
   margin: 0;
   width: 100%;
+  appearance: none;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--light-100);
 }
 
 input,
@@ -121,12 +136,12 @@ button:active {
   margin: 2rem 0;
 }
 
-#cameras--list,
-#cameras--list h3 {
+.cameras--list,
+.cameras--list h3 {
   font-size: 0.85rem;
 }
 
-#cameras--list div {
+.cameras--list div {
   background-color: #ffffff;
   display: grid;
   grid-template-columns: 80px 2fr repeat(3, 1fr);
@@ -137,20 +152,25 @@ button:active {
   margin-bottom: 1rem;
 }
 
-#cameras--list button {
+.cameras--list button {
   --button-color: #c90c0c;
   --button-shadow-color: hsla(0, 89%, 42%, 0.382);
+}
+
+footer {
+  padding: 1rem 0;
 }
 
 footer small {
   font-size: 0.75rem;
 }
 
-a,
-a:link {
-  color: var(--light-200);
+.search__box {
+  background-color: #ffffff;
+  padding: 0.5rem 1rem 1rem 1rem;
+  margin-top: 2rem;
 }
 
-a:hover {
-  color: var(--dark);
+.search__box #search-name {
+  grid-column: 1 / 4;
 }
